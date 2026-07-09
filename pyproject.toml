@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src/"]
+include = ["falcon_svcplane"]
+
+[project]
+name = "falcon-svcplane"
+version = "0.1.0"
+authors = [{ name = "Vishal Ranjan", email = "vishal.ranjan@junio.in" }]
+description = "East-west trust boundary for Falcon services: in-process mTLS termination + CN-based allow-list gating."
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+  "falcon >= 4.0",
+  "uvicorn >= 0.30",
+  "cryptography >= 42",
+]
+
+[project.optional-dependencies]
+dev = ["pytest >= 8", "pytest-asyncio >= 0.24"]
+
+[tool.pytest.ini_options]
+addopts = "-rSA"
+testpaths = ["tests"]
+asyncio_mode = "auto"
