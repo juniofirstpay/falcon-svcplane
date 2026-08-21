@@ -107,7 +107,7 @@ class _PeerCertScopeInjector:
 
     _peer_cert_der: bytes | None = None
 
-    def connection_made(self, transport: Any) -> None:  # type: ignore[override]
+    def connection_made(self, transport: Any) -> None:
         super().connection_made(transport)  # type: ignore[misc]
         self._peer_cert_der = _capture_peer_cert(transport)
 
