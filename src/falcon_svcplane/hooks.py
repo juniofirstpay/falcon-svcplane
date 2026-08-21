@@ -29,7 +29,7 @@ called them can read it with :func:`principal_from_request`.
 
 from __future__ import annotations
 
-from typing import Awaitable, Callable
+from typing import Any, Awaitable, Callable
 
 import falcon
 import falcon.asgi
@@ -42,7 +42,7 @@ _PRINCIPAL_CTX_ATTR = "svcplane_principal"
 
 
 HookFn = Callable[
-    [falcon.asgi.Request, falcon.asgi.Response, object, dict],
+    [falcon.asgi.Request, falcon.asgi.Response, object, dict[str, Any]],
     Awaitable[None],
 ]
 
@@ -60,7 +60,7 @@ def require_service_scope(verifier: Verifier, scope: str) -> HookFn:
         req: falcon.asgi.Request,
         resp: falcon.asgi.Response,
         resource: object,
-        params: dict,
+        params: dict[str, Any],
     ) -> None:
         principal = verifier.authenticate(req.scope)
         verifier.require_scope(principal, scope)
@@ -81,7 +81,7 @@ def require_callback(verifier: Verifier) -> HookFn:
         req: falcon.asgi.Request,
         resp: falcon.asgi.Response,
         resource: object,
-        params: dict,
+        params: dict[str, Any],
     ) -> None:
         principal = verifier.authenticate(req.scope)
         setattr(req.context, _PRINCIPAL_CTX_ATTR, principal)
@@ -98,7 +98,7 @@ async def render_svcplane_error(
     req: falcon.asgi.Request,
     resp: falcon.asgi.Response,
     ex: SvcPlaneError,
-    params: dict,
+    params: dict[str, Any],
 ) -> None:
     """Falcon error handler: render a :class:`SvcPlaneError` on the response.
 
@@ -109,7 +109,9 @@ async def render_svcplane_error(
     resp.media = ex.json()
 
 
-def register_error_handlers(app: falcon.asgi.App) -> None:
+def register_error_handlers(
+    app: falcon.asgi.App[falcon.asgi.Request, falcon.asgi.Response],
+) -> None:
     """Plumb :class:`SvcPlaneError` → the uniform response envelope.
 
     One line, called once at boot. All three east-west error subclasses share
